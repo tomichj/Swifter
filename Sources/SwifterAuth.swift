@@ -74,10 +74,9 @@ public extension Swifter {
     
     #if os(iOS)
     @available(iOS 13.0, *)
-    func authorize(withCallback callbackURL: URL,
+    func authorizeSUI(withCallback callbackURL: URL,
                       opener: (URL) -> Void,
                    forceLogin: Bool = false,
-                   safariDelegate: SFSafariViewControllerDelegate? = nil,
                    success: TokenSuccessHandler?,
                    failure: FailureHandler? = nil) {
         self.postOAuthRequestToken(with: callbackURL, success: { token, response in
