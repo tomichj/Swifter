@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 #if os(iOS)
     import UIKit
@@ -69,6 +70,49 @@ public extension Swifter {
     }
     #endif
     
+    
+    
+    #if os(iOS)
+    @available(iOS 13.0, *)
+    func authorize(withCallback callbackURL: URL,
+                      opener: (URL) -> Void,
+                   forceLogin: Bool = false,
+                   safariDelegate: SFSafariViewControllerDelegate? = nil,
+                   success: TokenSuccessHandler?,
+                   failure: FailureHandler? = nil) {
+        self.postOAuthRequestToken(with: callbackURL, success: { token, response in
+            var requestToken = token!
+            self.swifterCallbackToken = NotificationCenter.default.addObserver(forName: .swifterCallback, object: nil, queue: .main) { notification in
+                self.swifterCallbackToken = nil
+//                presenting?.presentedViewController?.dismiss(animated: true, completion: nil)
+                let url = notification.userInfo![CallbackNotification.optionsURLKey] as! URL
+                
+                let parameters = url.query!.queryStringParameters
+                requestToken.verifier = parameters["oauth_verifier"]
+                
+                self.postOAuthAccessToken(with: requestToken, success: { accessToken, response in
+                    self.client.credential = Credential(accessToken: accessToken!)
+                    success?(accessToken!, response)
+                    }, failure: failure)
+            }
+            
+            let forceLogin = forceLogin ? "&force_login=true" : ""
+            let query = "oauth/authorize?oauth_token=\(token!.key)\(forceLogin)"
+            let queryUrl = URL(string: query, relativeTo: TwitterURL.oauth.url)!.absoluteURL
+            opener(queryUrl)
+//            if let delegate = safariDelegate ?? (presenting as? SFSafariViewControllerDelegate) {
+//                let safariView = SFSafariViewController(url: queryUrl)
+//                safariView.delegate = delegate
+//                safariView.modalTransitionStyle = .coverVertical
+//                safariView.modalPresentationStyle = .overFullScreen
+//                presenting?.present(safariView, animated: true, completion: nil)
+//            } else {
+//                UIApplication.shared.open(queryUrl, options: [:], completionHandler: nil)
+//            }
+        }, failure: failure)
+    }
+    #endif
+
     /**
      Begin Authorization with a Callback URL
      
@@ -115,7 +159,7 @@ public extension Swifter {
             }
         }, failure: failure)
     }
-  
+    
     func authorizeSSO(success: SSOTokenSuccessHandler?, failure: FailureHandler? = nil) {
         guard let client = client as? SwifterAppProtocol else {
             let error = SwifterError(message: "SSO not supported AppOnly client",
