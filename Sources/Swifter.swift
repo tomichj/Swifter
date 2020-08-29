@@ -108,7 +108,7 @@ public class Swifter {
     public var client: SwifterClientProtocol
     private var chunkBuffer: String?
     
-    internal var swifterCallbackToken: NSObjectProtocol? {
+    var swifterCallbackToken: NSObjectProtocol? {
         willSet {
             guard let token = swifterCallbackToken else { return }
             NotificationCenter.default.removeObserver(token)
