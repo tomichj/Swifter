@@ -94,15 +94,15 @@ public extension Swifter {
         case withheld = "withheld"
     }
     
-    private func lookupTweet(for id: String,
-                             expansions: [Expansion]? = nil,
-                             mediaFields: [MediaField]? = nil,
-                             placeFields: [PlaceField]? = nil,
-                             pollFields: [PollField]? = nil,
-                             tweetFields: [TweetField]? = nil,
-                             userFields: [UserField]? = nil,
-                             success: SuccessHandler? = nil,
-                             failure: FailureHandler? = nil) {
+    func lookupTweet(for id: String,
+                     expansions: [Expansion]? = nil,
+                     mediaFields: [MediaField]? = nil,
+                     placeFields: [PlaceField]? = nil,
+                     pollFields: [PollField]? = nil,
+                     tweetFields: [TweetField]? = nil,
+                     userFields: [UserField]? = nil,
+                     success: SuccessHandler? = nil,
+                     failure: FailureHandler? = nil) {
         let path = "tweets/\(id).json"
         var params = [String: Any]()
         
@@ -120,15 +120,15 @@ public extension Swifter {
         self.getJSON(path: path, baseURL: .api, parameters: params, success: { json, _ in success?(json) }, failure: failure)
     }
 
-    private func lookupTweets(for ids: [String],
-                              expansions: [Expansion]? = nil,
-                              mediaFields: [MediaField]? = nil,
-                              placeFields: [PlaceField]? = nil,
-                              pollFields: [PollField]? = nil,
-                              tweetFields: [TweetField]? = nil,
-                              userFields: [UserField]? = nil,
-                              success: SuccessHandler? = nil,
-                              failure: FailureHandler? = nil) {
+    func lookupTweets(for ids: [String],
+                      expansions: [Expansion]? = nil,
+                      mediaFields: [MediaField]? = nil,
+                      placeFields: [PlaceField]? = nil,
+                      pollFields: [PollField]? = nil,
+                      tweetFields: [TweetField]? = nil,
+                      userFields: [UserField]? = nil,
+                      success: SuccessHandler? = nil,
+                      failure: FailureHandler? = nil) {
         let path = "tweets.json"
         var params = [String: Any]()
         params["ids"] = ids.joined(separator: ",")
